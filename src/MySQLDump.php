@@ -28,6 +28,8 @@ class MySQLDump
 	/** @var mysqli */
 	private $connection;
 
+	/** @var bool */
+	private $lockTables = true;
 
 	/**
 	 * Connects to database.
@@ -44,6 +46,13 @@ class MySQLDump
 		}
 	}
 
+	/**
+	 * @param bool $lockTables
+	 */
+	public function setLockTables(bool $lockTables = true)
+	{
+		$this->lockTables = $lockTables;
+	}
 
 	/**
 	 * Saves dump to the file.
@@ -84,7 +93,9 @@ class MySQLDump
 
 		$tables = array_merge($tables, $views); // views must be last
 
-		$this->connection->query('LOCK TABLES `' . implode('` READ, `', $tables) . '` READ');
+		if ($this->lockTables) {
+			$this->connection->query('LOCK TABLES `' . implode('` READ, `', $tables) . '` READ');
+		}
 
 		$db = $this->connection->query('SELECT DATABASE()')->fetch_row();
 		fwrite($handle, '-- Created at ' . date('j.n.Y G:i') . " using David Grudl MySQL Dump Utility\n"
@@ -105,7 +116,9 @@ class MySQLDump
 		fwrite($handle, "COMMIT;\n");
 		fwrite($handle, "-- THE END\n");
 
-		$this->connection->query('UNLOCK TABLES');
+		if ($this->lockTables) {
+			$this->connection->query('UNLOCK TABLES');
+		}
 	}
 
 
