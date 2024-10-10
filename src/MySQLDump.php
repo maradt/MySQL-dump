@@ -96,7 +96,6 @@ class MySQLDump
 			. "SET SQL_MODE='NO_AUTO_VALUE_ON_ZERO';\n"
 			. "SET FOREIGN_KEY_CHECKS=0;\n"
 			. "SET UNIQUE_CHECKS=0;\n"
-			. "SET AUTOCOMMIT=0;\n"
 		);
 
 		foreach ($tables as $table) {
